@@ -125,7 +125,7 @@ taskForm.addEventListener("submit", function (event) {
 
     taskForm.reset();
 
-    showPopup("Đã thêm bài tập!");
+    showPopup("Đã thêm bài tập.");
 
 });
 
@@ -245,14 +245,14 @@ function displayTasks() {
             </p>
 
             <p class="deadline">
-                ⏰ ${formatDate(task.deadline)}
+                Hạn: ${formatDate(task.deadline)}
             </p>
 
             <p class="status">
                 ${
                     task.completed
-                    ? "🟢 HOÀN THÀNH"
-                    : "🟡 CHƯA HOÀN THÀNH"
+                    ? "HOÀN THÀNH"
+                    : "CHƯA HOÀN THÀNH"
                 }
             </p>
 
@@ -260,7 +260,7 @@ function displayTasks() {
                 class="delete-button"
                 onclick="deleteTask(${task.id})"
             >
-                🗑️ Xóa
+                Xóa
             </button>
 
         `;
@@ -335,7 +335,7 @@ async function enableNotifications() {
         if (permission !== "granted") {
 
             showPopup(
-                "Bạn chưa cho phép thông báo."
+                "Thông báo chưa được cho phép."
             );
 
             return;
@@ -350,7 +350,7 @@ async function enableNotifications() {
             );
 
 
-        // Lấy FCM token
+        // Lấy FCM Token
 
         const token =
             await messaging.getToken({
@@ -392,7 +392,7 @@ async function enableNotifications() {
         showToken(token);
 
         showPopup(
-            "Đã bật thông báo!✪ ω ✪"
+            "Đã bật thông báo."
         );
 
 
@@ -477,7 +477,7 @@ function showToken(token) {
         await navigator.clipboard.writeText(token);
 
         showPopup(
-            "Đã sao chép FCM token!"
+            "Đã sao chép token."
         );
 
     };
@@ -499,7 +499,7 @@ messaging.onMessage(function (payload) {
 
     const title =
         payload.notification?.title ||
-        "📕 Study Reminder";
+        "Study Reminder";
 
 
     const body =
@@ -508,7 +508,7 @@ messaging.onMessage(function (payload) {
 
 
     showPopup(
-        "🔔 " + title + ": " + body
+        title + ": " + body
     );
 
 });
@@ -568,7 +568,7 @@ function checkNotifications() {
             task,
             difference,
             oneDay,
-            "Còn 1 ngày nữa đến hạn! ＞︿＜"
+            "Còn 1 ngày nữa đến hạn!"
         );
 
 
@@ -576,7 +576,7 @@ function checkNotifications() {
             task,
             difference,
             twelveHours,
-            "Còn 12 giờ nữa đến hạn! ⊙.☉"
+            "Còn 12 giờ nữa đến hạn!"
         );
 
 
@@ -584,7 +584,7 @@ function checkNotifications() {
             task,
             difference,
             threeHours,
-            "Còn 3 giờ nữa đến hạn! ＞﹏＜"
+            "Còn 3 giờ nữa đến hạn!"
         );
 
     });
@@ -614,7 +614,6 @@ function checkReminder(
         saveTasks();
 
         showPopup(
-            "🔔 " +
             task.subject +
             ": " +
             message
