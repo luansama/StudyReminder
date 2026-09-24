@@ -1,0 +1,17 @@
+{
+    "name": "Study Reminder",
+    "short_name": "Study Reminder",
+    "description": "Ứng dụng quản lý bài tập và lịch học",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#f4f6f8",
+    "theme_color": "#222222",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

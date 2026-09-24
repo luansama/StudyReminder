@@ -1,0 +1,400 @@
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    margin: 0;
+
+    font-family: Arial, sans-serif;
+
+    background: #f4f6f8;
+
+    color: #222;
+}
+
+
+.container {
+    width: 90%;
+
+    max-width: 900px;
+
+    margin: 40px auto;
+}
+
+
+/* ==================== */
+/* HEADER */
+/* ==================== */
+
+.header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+
+h1 {
+    margin-bottom: 5px;
+}
+
+
+.subtitle {
+    color: #666;
+
+    margin-top: 0;
+}
+
+
+/* ==================== */
+/* CARD */
+/* ==================== */
+
+.card {
+
+    background: white;
+
+    padding: 25px;
+
+    margin-top: 25px;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ==================== */
+/* FORM */
+/* ==================== */
+
+.form-group {
+
+    margin-bottom: 15px;
+}
+
+
+label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-weight: bold;
+}
+
+
+input,
+select {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    background: white;
+}
+
+
+input:focus,
+select:focus {
+
+    outline: none;
+
+    border-color: #555;
+}
+
+
+/* ==================== */
+/* BUTTON */
+/* ==================== */
+
+button {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #222;
+
+    color: white;
+
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+
+button:hover {
+
+    opacity: 0.85;
+}
+
+
+/* NÚT THÔNG BÁO */
+
+.notification-button {
+
+    width: auto;
+
+    white-space: nowrap;
+
+    padding: 10px 15px;
+}
+
+
+/* ==================== */
+/* TASK */
+/* ==================== */
+
+.task {
+
+    background: #f8f9fa;
+
+    border: 1px solid #ddd;
+
+    padding: 16px;
+
+    margin-top: 15px;
+
+    border-radius: 10px;
+}
+
+
+.task h3 {
+
+    margin-top: 0;
+
+    margin-bottom: 12px;
+}
+
+
+.task p {
+
+    margin: 7px 0;
+}
+
+
+/* ==================== */
+/* PRIORITY */
+/* ==================== */
+
+.priority {
+
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border-radius: 6px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    margin-top: 5px;
+}
+
+
+.priority-bat-buoc {
+    background: #ffd6d6;
+}
+
+
+.priority-quan-trong {
+    background: #ffe5c2;
+}
+
+
+.priority-thuong {
+    background: #fff4b8;
+}
+
+
+.priority-tham-khao {
+    background: #d9f5d9;
+}
+
+
+/* ==================== */
+/* DELETE */
+/* ==================== */
+
+.delete-button {
+
+    width: auto;
+
+    padding: 7px 12px;
+
+    margin-top: 10px;
+
+    background: #555;
+
+    font-size: 14px;
+}
+
+
+/* ==================== */
+/* MOBILE */
+/* ==================== */
+
+@media (max-width: 600px) {
+
+    .container {
+
+        width: 94%;
+
+        margin: 20px auto;
+    }
+
+
+    .header {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 10px;
+    }
+
+
+    .notification-button {
+
+        width: 100%;
+    }
+
+
+    .card {
+
+        padding: 18px;
+
+        margin-top: 18px;
+
+        border-radius: 12px;
+    }
+
+
+    h1 {
+
+        font-size: 26px;
+    }
+
+
+    h2 {
+
+        font-size: 20px;
+    }
+
+
+    input,
+    select,
+    button {
+
+        font-size: 16px;
+
+        min-height: 46px;
+    }
+
+}
+
+/* ==================== */
+/* POPUP THÔNG BÁO */
+/* ==================== */
+
+#notificationPopup {
+
+    position: fixed;
+
+    top: 20px;
+
+    right: 20px;
+
+    width: 330px;
+
+    max-width: calc(100% - 40px);
+
+    background: white;
+
+    border: 1px solid #ddd;
+
+    border-radius: 12px;
+
+    padding: 16px;
+
+    box-shadow:
+        0 5px 25px rgba(0, 0, 0, 0.18);
+
+    z-index: 9999;
+
+    opacity: 0;
+
+    transform: translateY(-20px);
+
+    pointer-events: none;
+
+    transition:
+        0.3s ease;
+}
+
+
+#notificationPopup.show {
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+}
+
+
+#popupTitle {
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    margin-bottom: 8px;
+}
+
+
+#popupMessage {
+
+    white-space: pre-line;
+
+    color: #555;
+
+    line-height: 1.5;
+}
+
+
+/* POPUP TRÊN ĐIỆN THOẠI */
+
+@media (max-width: 600px) {
+
+    #notificationPopup {
+
+        top: 12px;
+
+        left: 12px;
+
+        right: 12px;
+
+        width: auto;
+
+        max-width: none;
+    }
+
+}

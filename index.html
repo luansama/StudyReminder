@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Study Reminder</title>
+
+    <meta
+        name="theme-color"
+        content="#222222"
+    >
+
+    <link
+        rel="manifest"
+        href="manifest.json"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+
+            <div>
+
+                <h1>📚 Study Reminder</h1>
+
+                <p class="subtitle">
+                    Quản lý bài tập và lịch học
+                </p>
+
+            </div>
+
+
+            <button
+                class="notification-button"
+                onclick="requestNotificationPermission()"
+            >
+                🔔 Bật thông báo
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>➕ Thêm bài tập</h2>
+
+
+            <div class="form-group">
+
+                <label for="subject">
+                    Môn học
+                </label>
+
+                <input
+                    type="text"
+                    id="subject"
+                    placeholder="Ví dụ: Ngữ văn"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="content">
+                    Nội dung
+                </label>
+
+                <input
+                    type="text"
+                    id="content"
+                    placeholder="Ví dụ: Soạn bài 3"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="deadline">
+                    Hạn nộp
+                </label>
+
+                <input
+                    type="datetime-local"
+                    id="deadline"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="priority">
+                    Mức độ
+                </label>
+
+                <select id="priority">
+
+                    <option value="bat-buoc">
+                        🔴 BẮT-BUỘC
+                    </option>
+
+                    <option value="quan-trong">
+                        🟠 QUAN-TRỌNG
+                    </option>
+
+                    <option
+                        value="thuong"
+                        selected
+                    >
+                        🟡 THƯỜNG
+                    </option>
+
+                    <option value="tham-khao">
+                        🟢 THAM KHẢO
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button onclick="addTask()">
+                ➕ Thêm bài
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>📋 Bài tập</h2>
+
+            <div id="taskList"></div>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+
+    <!-- ĐĂNG KÝ PWA -->
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker
+                        .register("./sw.js")
+                        .then(function() {
+
+                            console.log(
+                                "PWA đã được đăng ký."
+                            );
+
+                        })
+                        .catch(function(error) {
+
+                            console.log(
+                                "Lỗi PWA:",
+                                error
+                            );
+
+                        });
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
