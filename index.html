@@ -1,108 +1,199 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Study Reminder</title>
 
-    <meta name="theme-color" content="#222222">
+    <meta
+        name="theme-color"
+        content="#222222"
+    >
 
-    <link rel="manifest" href="./manifest.json">
-    <link rel="stylesheet" href="./style.css">
+    <link
+        rel="manifest"
+        href="manifest.json"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
     <div class="container">
 
-        <header>
-            <h1>Study Reminder</h1>
-            <p>Quản lý bài tập và lịch học</p>
+        <div class="header">
 
-            <button id="notificationButton">
-                Bật thông báo
+            <div>
+
+                <h1>📚 Study Reminder</h1>
+
+                <p class="subtitle">
+                    Quản lý bài tập và lịch học
+                </p>
+
+            </div>
+
+
+            <button
+                class="notification-button"
+                onclick="requestNotificationPermission()"
+            >
+                🔔 Bật thông báo
             </button>
-        </header>
 
-        <section class="form-section">
+        </div>
 
-            <h2>Thêm bài tập</h2>
 
-            <form id="taskForm">
+        <div class="card">
 
-                <label for="subject">Môn học</label>
+            <h2>➕ Thêm bài tập</h2>
+
+
+            <div class="form-group">
+
+                <label for="subject">
+                    Môn học
+                </label>
+
                 <input
                     type="text"
                     id="subject"
-                    placeholder="Ví dụ: Toán"
-                    required
+                    placeholder="Ví dụ: Ngữ văn"
                 >
 
-                <label for="content">Nội dung</label>
-                <textarea
-                    id="content"
-                    placeholder="Ví dụ: Làm bài tập trang 25"
-                    required
-                ></textarea>
+            </div>
 
-                <label for="deadline">Hạn nộp</label>
+
+            <div class="form-group">
+
+                <label for="content">
+                    Nội dung
+                </label>
+
+                <input
+                    type="text"
+                    id="content"
+                    placeholder="Ví dụ: Soạn bài 3"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="deadline">
+                    Hạn nộp
+                </label>
+
                 <input
                     type="datetime-local"
                     id="deadline"
-                    required
                 >
 
-                <label for="priority">Mức độ</label>
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="priority">
+                    Mức độ
+                </label>
 
                 <select id="priority">
-                    <option value="mandatory">🔴 BẮT-BUỘC</option>
-                    <option value="important">🟠 QUAN-TRỌNG</option>
-                    <option value="normal" selected>🟡 THƯỜNG</option>
-                    <option value="reference">🟢 THAM KHẢO</option>
+
+                    <option value="bat-buoc">
+                        🔴 BẮT-BUỘC
+                    </option>
+
+                    <option value="quan-trong">
+                        🟠 QUAN-TRỌNG
+                    </option>
+
+                    <option
+                        value="thuong"
+                        selected
+                    >
+                        🟡 THƯỜNG
+                    </option>
+
+                    <option value="tham-khao">
+                        🟢 THAM KHẢO
+                    </option>
+
                 </select>
 
-                <button type="submit">
-                    Thêm bài
-                </button>
+            </div>
 
-            </form>
 
-        </section>
+            <button onclick="addTask()">
+                ➕ Thêm bài
+            </button>
 
-        <section class="task-section">
+        </div>
 
-            <h2>Bài tập</h2>
+
+        <div class="card">
+
+            <h2>📋 Bài tập</h2>
 
             <div id="taskList"></div>
 
-        </section>
+        </div>
 
     </div>
 
-    <div id="notificationPopup" class="notification-popup">
-        <span id="popupMessage"></span>
-    </div>
 
-    <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging-compat.js"></script>
+    <script src="script.js"></script>
 
-    <script src="./script.js"></script>
+
+    <!-- ĐĂNG KÝ PWA -->
 
     <script>
+
         if ("serviceWorker" in navigator) {
-            window.addEventListener("load", function () {
-                navigator.serviceWorker
-                    .register("./sw.js")
-                    .then(function () {
-                        console.log("PWA đã được đăng ký.");
-                    })
-                    .catch(function (error) {
-                        console.log("Lỗi PWA:", error);
-                    });
-            });
+
+            window.addEventListener(
+                "load",
+                function() {
+
+                    navigator.serviceWorker
+                        .register("./sw.js")
+                        .then(function() {
+
+                            console.log(
+                                "PWA đã được đăng ký."
+                            );
+
+                        })
+                        .catch(function(error) {
+
+                            console.log(
+                                "Lỗi PWA:",
+                                error
+                            );
+
+                        });
+
+                }
+            );
+
         }
+
     </script>
 
 </body>
+
 </html>
