@@ -125,7 +125,7 @@ taskForm.addEventListener("submit", function (event) {
 
     taskForm.reset();
 
-    showPopup("✅ Đã thêm bài tập!");
+    showPopup("Đã thêm bài tập!");
 
 });
 
@@ -303,7 +303,7 @@ function deleteTask(id) {
 
     displayTasks();
 
-    showPopup("🗑️ Đã xóa bài tập.");
+    showPopup("Đã xóa bài tập.");
 
 }
 
@@ -319,7 +319,7 @@ async function enableNotifications() {
         if (!("Notification" in window)) {
 
             showPopup(
-                "❌ Trình duyệt không hỗ trợ thông báo."
+                "Trình duyệt không hỗ trợ thông báo."
             );
 
             return;
@@ -335,7 +335,7 @@ async function enableNotifications() {
         if (permission !== "granted") {
 
             showPopup(
-                "❌ Bạn chưa cho phép thông báo."
+                "Bạn chưa cho phép thông báo."
             );
 
             return;
@@ -366,7 +366,7 @@ async function enableNotifications() {
         if (!token) {
 
             showPopup(
-                "❌ Không lấy được FCM token."
+                "Không lấy được FCM token."
             );
 
             return;
@@ -392,7 +392,7 @@ async function enableNotifications() {
         showToken(token);
 
         showPopup(
-            "✅ Đã bật thông báo!"
+            "Đã bật thông báo!✪ ω ✪"
         );
 
 
@@ -404,7 +404,7 @@ async function enableNotifications() {
         );
 
         showPopup(
-            "❌ Lỗi bật thông báo. Xem Console."
+            "Lỗi bật thông báo. Xem Console."
         );
 
     }
@@ -453,7 +453,7 @@ function showToken(token) {
                 id="copyTokenButton"
                 style="margin-top:8px;"
             >
-                📋 Sao chép token
+                Sao chép token
             </button>
 
         `;
@@ -477,7 +477,7 @@ function showToken(token) {
         await navigator.clipboard.writeText(token);
 
         showPopup(
-            "📋 Đã sao chép FCM token!"
+            "Đã sao chép FCM token!"
         );
 
     };
@@ -499,7 +499,7 @@ messaging.onMessage(function (payload) {
 
     const title =
         payload.notification?.title ||
-        "📚 Study Reminder";
+        "📕 Study Reminder";
 
 
     const body =
@@ -568,7 +568,7 @@ function checkNotifications() {
             task,
             difference,
             oneDay,
-            "Còn 1 ngày nữa đến hạn!"
+            "Còn 1 ngày nữa đến hạn! ＞︿＜"
         );
 
 
@@ -576,7 +576,7 @@ function checkNotifications() {
             task,
             difference,
             twelveHours,
-            "Còn 12 giờ nữa đến hạn!"
+            "Còn 12 giờ nữa đến hạn! ⊙.☉"
         );
 
 
@@ -584,7 +584,7 @@ function checkNotifications() {
             task,
             difference,
             threeHours,
-            "Còn 3 giờ nữa đến hạn!"
+            "Còn 3 giờ nữa đến hạn! ＞﹏＜"
         );
 
     });
