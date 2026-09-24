@@ -1,14 +1,74 @@
-// ==========================================
-// DỮ LIỆU
-// ==========================================
+```javascript
+// ==============================
+// FIREBASE CONFIG
+// ==============================
 
-let tasks =
-    JSON.parse(localStorage.getItem("studyTasks")) || [];
+const firebaseConfig = {
+    apiKey: "AIzaSyBJKAjA88lwgcNKAt8w0gw9S_58P3zmpLw",
+    authDomain: "study-reminder-d4544.firebaseapp.com",
+    projectId: "study-reminder-d4544",
+    storageBucket: "study-reminder-d4544.firebasestorage.app",
+    messagingSenderId: "601610775790",
+    appId: "1:601610775790:web:4ea18fd72e5878c0bc97ff"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const messaging = firebase.messaging();
 
 
-// ==========================================
-// LƯU DỮ LIỆU
-// ==========================================
+// ==============================
+// VAPID PUBLIC KEY
+// ==============================
+
+const VAPID_KEY =
+    "BCI1tv37OumYy57CWPxS8_5HsMM94MJPaidtqkYqZtCqiDONVbMtYLbGMJmHV5vX2KcovYHwL_1D4zvYA3WiLQQ";
+
+
+// ==============================
+// DATA
+// ==============================
+
+let tasks = JSON.parse(
+    localStorage.getItem("studyTasks") || "[]"
+);
+
+
+// ==============================
+// ELEMENTS
+// ==============================
+
+const taskForm = document.getElementById("taskForm");
+const taskList = document.getElementById("taskList");
+const notificationButton =
+    document.getElementById("notificationButton");
+
+const notificationPopup =
+    document.getElementById("notificationPopup");
+
+const popupMessage =
+    document.getElementById("popupMessage");
+
+
+// ==============================
+// POPUP
+// ==============================
+
+function showPopup(message) {
+
+    popupMessage.textContent = message;
+
+    notificationPopup.classList.add("show");
+
+    setTimeout(function () {
+        notificationPopup.classList.remove("show");
+    }, 3000);
+}
+
+
+// ==============================
+// SAVE TASKS
+// ==============================
 
 function saveTasks() {
 
@@ -19,11 +79,13 @@ function saveTasks() {
 }
 
 
-// ==========================================
-// THÊM BÀI
-// ==========================================
+// ==============================
+// ADD TASK
+// ==============================
 
-function addTask() {
+taskForm.addEventListener("submit", function (event) {
+
+    event.preventDefault();
 
     const subject =
         document.getElementById("subject").value.trim();
@@ -37,22 +99,9 @@ function addTask() {
     const priority =
         document.getElementById("priority").value;
 
-
-    if (
-        subject === "" ||
-        content === "" ||
-        deadline === ""
-    ) {
-
-        alert("Vui lòng nhập đầy đủ thông tin!");
-
-        return;
-    }
-
-
     const task = {
 
-        id: getNextTaskId(),
+        id: Date.now(),
 
         subject: subject,
 
@@ -62,10 +111,11 @@ function addTask() {
 
         priority: priority,
 
-        notifications: []
+        completed: false,
+
+        reminders: {}
 
     };
-
 
     tasks.push(task);
 
@@ -73,127 +123,134 @@ function addTask() {
 
     displayTasks();
 
+    taskForm.reset();
 
-    document.getElementById("subject").value = "";
+    showPopup("✅ Đã thêm bài tập!");
 
-    document.getElementById("content").value = "";
-
-    document.getElementById("deadline").value = "";
-
-    document.getElementById("priority").value = "thuong";
+});
 
 
-    showPopup(
-        "Đã thêm bài",
-        `${priorityIcon(priority)} ${content}`
-    );
-}
+// ==============================
+// PRIORITY
+// ==============================
 
+function getPriorityInfo(priority) {
 
-// ==========================================
-// TẠO MÃ BÀI
-// ==========================================
-
-function getNextTaskId() {
-
-    if (tasks.length === 0) {
-
-        return "001";
+    if (priority === "mandatory") {
+        return {
+            text: "🔴 BẮT-BUỘC",
+            className: "priority-mandatory"
+        };
     }
 
+    if (priority === "important") {
+        return {
+            text: "🟠 QUAN-TRỌNG",
+            className: "priority-important"
+        };
+    }
 
-    let maxId = 0;
+    if (priority === "reference") {
+        return {
+            text: "🟢 THAM KHẢO",
+            className: "priority-reference"
+        };
+    }
 
-
-    tasks.forEach(function(task) {
-
-        const number =
-            parseInt(task.id);
-
-        if (number > maxId) {
-
-            maxId = number;
-        }
-    });
-
-
-    return String(maxId + 1).padStart(3, "0");
+    return {
+        text: "🟡 THƯỜNG",
+        className: "priority-normal"
+    };
 }
 
 
-// ==========================================
-// HIỂN THỊ BÀI
-// ==========================================
+// ==============================
+// DATE FORMAT
+// ==============================
+
+function formatDate(dateString) {
+
+    const date = new Date(dateString);
+
+    return date.toLocaleString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+
+}
+
+
+// ==============================
+// DISPLAY TASKS
+// ==============================
 
 function displayTasks() {
 
-    const taskList =
-        document.getElementById("taskList");
-
+    taskList.innerHTML = "";
 
     if (tasks.length === 0) {
 
         taskList.innerHTML =
-            "<p>Chưa có bài tập nào.</p>";
+            '<p class="empty">Chưa có bài tập nào.</p>';
 
         return;
     }
 
+    tasks.forEach(function (task) {
 
-    taskList.innerHTML = "";
+        const deadline =
+            new Date(task.deadline);
 
+        const now =
+            new Date();
 
-    tasks.forEach(function(task) {
-
-        const completed =
-            isCompleted(task.deadline);
+        if (
+            now >= deadline &&
+            !task.completed
+        ) {
+            task.completed = true;
+        }
 
         const priority =
             getPriorityInfo(task.priority);
 
-
-        const taskBox =
+        const card =
             document.createElement("div");
 
+        card.className = "task-card";
 
-        taskBox.className = "task";
+        if (task.completed) {
+            card.classList.add("completed");
+        }
 
+        card.innerHTML = `
 
-        taskBox.innerHTML = `
+            <div class="task-header">
 
-            <h3>
-                ${priority.icon}
+                <h3>
+                    ${escapeHTML(task.subject)}
+                </h3>
+
+                <span class="priority ${priority.className}">
+                    ${priority.text}
+                </span>
+
+            </div>
+
+            <p class="task-content">
                 ${escapeHTML(task.content)}
-            </h3>
-
-            <p>
-                <strong>Môn:</strong>
-                ${escapeHTML(task.subject)}
             </p>
 
-            <p>
-                <strong>Hạn nộp:</strong>
-                ${formatDeadline(task.deadline)}
+            <p class="deadline">
+                ⏰ ${formatDate(task.deadline)}
             </p>
 
-            <p>
-                <strong>Mã:</strong>
-                ${task.id}
-            </p>
-
-            <p>
-                <strong>Mức độ:</strong>
-            </p>
-
-            <span class="priority ${priority.className}">
-                ${priority.icon}
-                ${priority.name}
-            </span>
-
-            <p>
-                <strong>Trạng thái:</strong>
+            <p class="status">
                 ${
-                    completed
+                    task.completed
                     ? "🟢 HOÀN THÀNH"
                     : "🟡 CHƯA HOÀN THÀNH"
                 }
@@ -201,304 +258,275 @@ function displayTasks() {
 
             <button
                 class="delete-button"
-                onclick="deleteTask('${task.id}')"
+                onclick="deleteTask(${task.id})"
             >
-                🗑️ Xóa bài
+                🗑️ Xóa
             </button>
+
         `;
 
-
-        taskList.appendChild(taskBox);
+        taskList.appendChild(card);
 
     });
+
+    saveTasks();
 }
 
 
-// ==========================================
-// THÔNG TIN MỨC ĐỘ
-// ==========================================
+// ==============================
+// ESCAPE HTML
+// ==============================
 
-function getPriorityInfo(priority) {
+function escapeHTML(text) {
 
-    if (priority === "bat-buoc") {
+    const div =
+        document.createElement("div");
 
-        return {
+    div.textContent = text;
 
-            icon: "🔴",
-
-            name: "BẮT-BUỘC",
-
-            className:
-                "priority-bat-buoc"
-        };
-    }
-
-
-    if (priority === "quan-trong") {
-
-        return {
-
-            icon: "🟠",
-
-            name: "QUAN-TRỌNG",
-
-            className:
-                "priority-quan-trong"
-        };
-    }
-
-
-    if (priority === "tham-khao") {
-
-        return {
-
-            icon: "🟢",
-
-            name: "THAM KHẢO",
-
-            className:
-                "priority-tham-khao"
-        };
-    }
-
-
-    return {
-
-        icon: "🟡",
-
-        name: "THƯỜNG",
-
-        className:
-            "priority-thuong"
-    };
+    return div.innerHTML;
 }
 
 
-function priorityIcon(priority) {
-
-    return getPriorityInfo(priority).icon;
-}
-
-
-// ==========================================
-// KIỂM TRA QUÁ HẠN
-// ==========================================
-
-function isCompleted(deadline) {
-
-    return new Date() > new Date(deadline);
-}
-
-
-// ==========================================
-// HIỂN THỊ HẠN
-// ==========================================
-
-function formatDeadline(deadline) {
-
-    const date =
-        new Date(deadline);
-
-    const now =
-        new Date();
-
-
-    const sameDay =
-
-        date.getDate() === now.getDate() &&
-
-        date.getMonth() === now.getMonth() &&
-
-        date.getFullYear() === now.getFullYear();
-
-
-    const time =
-        date.toLocaleTimeString(
-            "vi-VN",
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
-
-
-    if (sameDay) {
-
-        return `HÔM NAY - ${time}`;
-    }
-
-
-    return date.toLocaleString("vi-VN");
-}
-
-
-// ==========================================
-// XÓA BÀI
-// ==========================================
+// ==============================
+// DELETE
+// ==============================
 
 function deleteTask(id) {
 
-    if (
-        !confirm("Bạn có chắc muốn xóa bài này?")
-    ) {
-
-        return;
-    }
-
-
     tasks =
-        tasks.filter(function(task) {
-
+        tasks.filter(function (task) {
             return task.id !== id;
         });
-
 
     saveTasks();
 
     displayTasks();
+
+    showPopup("🗑️ Đã xóa bài tập.");
+
 }
 
 
-// ==========================================
-// XIN QUYỀN THÔNG BÁO
-// ==========================================
+// ==============================
+// FIREBASE NOTIFICATION
+// ==============================
 
-function requestNotificationPermission() {
+async function enableNotifications() {
 
-    if (!("Notification" in window)) {
+    try {
 
-        alert(
-            "Trình duyệt này không hỗ trợ thông báo."
+        if (!("Notification" in window)) {
+
+            showPopup(
+                "❌ Trình duyệt không hỗ trợ thông báo."
+            );
+
+            return;
+        }
+
+
+        // Xin quyền thông báo
+
+        const permission =
+            await Notification.requestPermission();
+
+
+        if (permission !== "granted") {
+
+            showPopup(
+                "❌ Bạn chưa cho phép thông báo."
+            );
+
+            return;
+        }
+
+
+        // Đăng ký Firebase Messaging Service Worker
+
+        const registration =
+            await navigator.serviceWorker.register(
+                "./firebase-messaging-sw.js"
+            );
+
+
+        // Lấy FCM token
+
+        const token =
+            await messaging.getToken({
+
+                vapidKey: VAPID_KEY,
+
+                serviceWorkerRegistration:
+                    registration
+
+            });
+
+
+        if (!token) {
+
+            showPopup(
+                "❌ Không lấy được FCM token."
+            );
+
+            return;
+        }
+
+
+        // Lưu token trên máy
+
+        localStorage.setItem(
+            "fcmToken",
+            token
         );
 
-        return;
-    }
 
-
-    Notification.requestPermission()
-        .then(function(permission) {
-
-            if (permission === "granted") {
-
-                showPopup(
-                    "🔔 Đã bật thông báo",
-                    "Study Reminder có thể gửi thông báo."
-                );
-
-
-                new Notification(
-                    "📚 Study Reminder",
-                    {
-                        body:
-                            "Thông báo bài tập đã được bật!"
-                    }
-                );
-
-            }
-
-            else {
-
-                showPopup(
-                    "Thông báo chưa được bật",
-                    "Bạn chưa cho phép trình duyệt gửi thông báo."
-                );
-            }
-
-        });
-}
-
-
-// ==========================================
-// GỬI NOTIFICATION
-// ==========================================
-
-function sendNotification(task, message) {
-
-    const title =
-        `${priorityIcon(task.priority)} ${task.content}`;
-
-
-    const body =
-        `${task.subject}\n${message}\nMã: ${task.id}`;
-
-
-    // Notification hệ thống
-    if (
-        "Notification" in window &&
-        Notification.permission === "granted"
-    ) {
-
-        new Notification(
-            "📚 Study Reminder",
-            {
-                body: body
-            }
+        console.log(
+            "FCM TOKEN:",
+            token
         );
+
+
+        // Hiện token để test Firebase
+
+        showToken(token);
+
+        showPopup(
+            "✅ Đã bật thông báo!"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Lỗi Firebase Messaging:",
+            error
+        );
+
+        showPopup(
+            "❌ Lỗi bật thông báo. Xem Console."
+        );
+
     }
 
-
-    // Popup trong trang
-    showPopup(
-        title,
-        body
-    );
 }
 
 
-// ==========================================
-// POPUP TRONG TRANG
-// ==========================================
+// ==============================
+// SHOW TOKEN
+// ==============================
 
-function showPopup(title, message) {
+function showToken(token) {
 
-    let popup =
-        document.getElementById("notificationPopup");
+    let box =
+        document.getElementById("tokenBox");
 
 
-    if (!popup) {
+    if (!box) {
 
-        popup =
+        box =
             document.createElement("div");
 
-        popup.id =
-            "notificationPopup";
+        box.id =
+            "tokenBox";
 
+        box.style.marginTop =
+            "15px";
 
-        popup.innerHTML = `
+        box.innerHTML = `
 
-            <div id="popupTitle"></div>
+            <p>
+                <b>FCM Token dùng để test:</b>
+            </p>
 
-            <div id="popupMessage"></div>
+            <textarea
+                id="fcmToken"
+                readonly
+                style="
+                    width:100%;
+                    min-height:100px;
+                    box-sizing:border-box;
+                "
+            ></textarea>
+
+            <button
+                id="copyTokenButton"
+                style="margin-top:8px;"
+            >
+                📋 Sao chép token
+            </button>
 
         `;
 
+        document
+            .querySelector("header")
+            .appendChild(box);
 
-        document.body.appendChild(popup);
     }
 
 
-    document.getElementById("popupTitle")
-        .textContent = title;
+    document.getElementById(
+        "fcmToken"
+    ).value = token;
 
 
-    document.getElementById("popupMessage")
-        .textContent = message;
+    document.getElementById(
+        "copyTokenButton"
+    ).onclick = async function () {
 
+        await navigator.clipboard.writeText(token);
 
-    popup.classList.add("show");
+        showPopup(
+            "📋 Đã sao chép FCM token!"
+        );
 
+    };
 
-    setTimeout(function() {
-
-        popup.classList.remove("show");
-
-    }, 6000);
 }
 
 
-// ==========================================
-// KIỂM TRA NHẮC BÀI
-// ==========================================
+// ==============================
+// FOREGROUND MESSAGE
+// ==============================
+
+messaging.onMessage(function (payload) {
+
+    console.log(
+        "Nhận thông báo khi app đang mở:",
+        payload
+    );
+
+
+    const title =
+        payload.notification?.title ||
+        "📚 Study Reminder";
+
+
+    const body =
+        payload.notification?.body ||
+        "Bạn có một thông báo mới.";
+
+
+    showPopup(
+        "🔔 " + title + ": " + body
+    );
+
+});
+
+
+// ==============================
+// BUTTON
+// ==============================
+
+notificationButton.addEventListener(
+    "click",
+    enableNotifications
+);
+
+
+// ==============================
+// OLD LOCAL REMINDERS
+// ==============================
 
 function checkNotifications() {
 
@@ -506,15 +534,18 @@ function checkNotifications() {
         new Date();
 
 
-    tasks.forEach(function(task) {
+    tasks.forEach(function (task) {
+
+        if (task.completed) {
+            return;
+        }
+
 
         const deadline =
             new Date(task.deadline);
 
 
-        // Không nhắc bài đã quá hạn
         if (now >= deadline) {
-
             return;
         }
 
@@ -533,7 +564,6 @@ function checkNotifications() {
             3 * 60 * 60 * 1000;
 
 
-        // 24 GIỜ
         checkReminder(
             task,
             difference,
@@ -542,7 +572,6 @@ function checkNotifications() {
         );
 
 
-        // 12 GIỜ
         checkReminder(
             task,
             difference,
@@ -551,7 +580,6 @@ function checkNotifications() {
         );
 
 
-        // 3 GIỜ
         checkReminder(
             task,
             difference,
@@ -564,81 +592,48 @@ function checkNotifications() {
 }
 
 
-// ==========================================
-// KIỂM TRA TỪNG MỐC
-// ==========================================
-
 function checkReminder(
     task,
     difference,
-    targetTime,
+    target,
     message
 ) {
 
-    const tolerance =
-        60 * 1000;
+    const key =
+        String(target);
 
 
     if (
-        Math.abs(difference - targetTime)
-        <= tolerance
+        difference <= target &&
+        difference > target - 60000 &&
+        !task.reminders[key]
     ) {
 
-        const key =
-            `${task.id}-${targetTime}`;
+        task.reminders[key] = true;
 
+        saveTasks();
 
-        if (!task.notifications.includes(key)) {
+        showPopup(
+            "🔔 " +
+            task.subject +
+            ": " +
+            message
+        );
 
-            task.notifications.push(key);
-
-
-            saveTasks();
-
-
-            sendNotification(
-                task,
-                message
-            );
-        }
     }
+
 }
-
-
-// ==========================================
-// CHỐNG HTML LỖI
-// ==========================================
-
-function escapeHTML(text) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent = text;
-
-    return div.innerHTML;
-}
-
-
-// ==========================================
-// KHỞI ĐỘNG
-// ==========================================
-
-displayTasks();
-
-
-// Kiểm tra ngay
-checkNotifications();
 
 
 // Kiểm tra mỗi phút
+
 setInterval(
-    function() {
-
-        displayTasks();
-
-        checkNotifications();
-
-    },
+    checkNotifications,
     60000
 );
+
+
+// Hiển thị ngay khi mở app
+
+displayTasks();
+```
