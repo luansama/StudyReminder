@@ -18,17 +18,17 @@
     <div class="container">
 
         <header>
-            <h1>📕 Study Reminder</h1>
-            <p>Quản lý bài tập và lịch học. Được tạo bởi luandepzai</p>
+            <h1>Study Reminder</h1>
+            <p>Quản lý bài tập và lịch học</p>
 
             <button id="notificationButton">
-                🔔 Bật thông báo
+                Bật thông báo
             </button>
         </header>
 
         <section class="form-section">
 
-            <h2> + Thêm bài tập</h2>
+            <h2>Thêm bài tập</h2>
 
             <form id="taskForm">
 
@@ -36,14 +36,14 @@
                 <input
                     type="text"
                     id="subject"
-                    placeholder="Ví dụ: Ngữ Văn"
+                    placeholder="Ví dụ: Toán"
                     required
                 >
 
                 <label>Nội dung</label>
                 <textarea
                     id="content"
-                    placeholder="Ví dụ: Soạn trang 36"
+                    placeholder="Ví dụ: Làm bài tập trang 25"
                     required
                 ></textarea>
 
@@ -77,7 +77,7 @@
                 </select>
 
                 <button type="submit">
-                    ➕ Thêm bài
+                    Thêm bài
                 </button>
 
             </form>
@@ -108,20 +108,16 @@
     <!-- PWA -->
     <script>
         if ("serviceWorker" in navigator) {
-
             window.addEventListener("load", function () {
-
                 navigator.serviceWorker
-                    .register("./sw-v2.js")
+                    .register("./sw.js")
                     .then(function () {
                         console.log("PWA đã được đăng ký.");
                     })
                     .catch(function (error) {
                         console.log("Lỗi PWA:", error);
                     });
-
             });
-
         }
     </script>
 
